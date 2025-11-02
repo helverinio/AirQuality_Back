@@ -11,6 +11,7 @@ import { StationsModule } from './stations/stations.module';
 import { PollutantsModule } from './pollutants/pollutants.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UsersModule } from './users/users.module';
     PollutantsModule,
     MeasurementsModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
