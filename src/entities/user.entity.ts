@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Company } from './company.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'Users' })
 export class User {
@@ -19,6 +20,7 @@ export class User {
   @JoinColumn({ name: 'CompanyID' })
   company: Company;
 
+  @Exclude()
   @Column({ name: 'Password', length: 200 })
   password: string;
 }
