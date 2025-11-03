@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from '../entities/company.entity';
@@ -9,11 +9,43 @@ import { UpdateCompanyDto } from './update-company.dto';
 export class CompaniesService {
   constructor(@InjectRepository(Company) private repo: Repository<Company>) {}
 
-  create(dto: CreateCompanyDto) {
-    const e: any = this.repo.create({ companyName: dto.companyName });
-    if (dto.cityID) e.city = { cityID: dto.cityID };
-    if (dto.locationID) e.location = { locationID: dto.locationID };
-    return this.repo.save(e);
+  async create(dto: CreateCompanyDto) {
+    try {
+      if (!dto || !dto.companyName) {
+        throw new BadRequestException('companyName is required');
+      }
+
+      // Create base company entity
+      const company = this.repo.create({
+        companyName: dto.companyName
+      });
+
+      // Add relations if IDs are provided
+      if (dto.cityID) {
+        company.city = { cityID: dto.cityID } as any;
+      }
+      if (dto.locationID) {
+        company.location = { locationID: dto.locationID } as any;
+      }
+
+      console.log('Creating company with data:', {
+        companyName: dto.companyName,
+        cityID: dto.cityID,
+        locationID: dto.locationID
+      });
+
+      return await this.repo.save(company);
+    } catch (error) {
+      console.error('Error creating company:', error);
+      if (error instanceof BadRequestException) throw error;
+      if (error.code === '23502') { // NOT NULL violation
+        throw new BadRequestException('CompanyName is required');
+      }
+      if (error.code === '23503') { // Foreign key violation
+        throw new BadRequestException('Invalid cityID or locationID');
+      }
+      throw new InternalServerErrorException('Failed to create company: ' + error.message);
+    }
   }
 
   findAll() {
