@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Location } from '../entities/location.entity';
@@ -9,9 +9,24 @@ import { UpdateLocationDto } from './update-location.dto';
 export class LocationsService {
   constructor(@InjectRepository(Location) private repo: Repository<Location>) {}
 
-  create(dto: CreateLocationDto) {
-    const e = this.repo.create(dto as any);
-    return this.repo.save(e);
+  async create(dto: CreateLocationDto) {
+    try {
+      if (!dto || !dto.locationName) {
+        throw new BadRequestException('locationName is required');
+      }
+
+      const location = this.repo.create({
+        locationName: dto.locationName,
+        latitude: dto.latitude,
+        longitude: dto.longitude
+      });
+
+      return await this.repo.save(location);
+    } catch (error) {
+      console.error('Error creating location:', error);
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException('Failed to create location. ' + error.message);
+    }
   }
 
   findAll() {
