@@ -26,7 +26,18 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return this.repo.findOne({ where: { email } });
+    // Using createQueryBuilder to ensure we get the password
+    return this.repo
+      .createQueryBuilder('user')
+      .select([
+        'user.userID',
+        'user.email',
+        'user.password',
+        'user.fullName',
+        'user.phone'
+      ])
+      .where('user.email = :email', { email })
+      .getOne();
   }
 
   async update(id: number, dto: UpdateUserDto) {

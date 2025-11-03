@@ -8,16 +8,29 @@ export class AuthService {
   constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
   async validateUser(email: string, pass: string) {
-    const user: any = await this.usersService.findByEmail(email);
-    if (!user) return null;
-    const match = await bcrypt.compare(pass, user.password || '');
-    if (match) {
-      // copy without password
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user as any;
-      return result;
+    try {
+      console.log('Attempting to validate user:', email);
+      const user = await this.usersService.findByEmail(email);
+      
+      if (!user) {
+        console.log('User not found');
+        return null;
+      }
+      
+      console.log('User found, comparing passwords');
+      const match = await bcrypt.compare(pass, user.password);
+      console.log('Password match:', match);
+      
+      if (match) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...result } = user;
+        return result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error in validateUser:', error);
+      return null;
     }
-    return null;
   }
 
   async login(user: any) {
