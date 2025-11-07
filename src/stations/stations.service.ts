@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Station } from '../entities/station.entity';
@@ -9,11 +9,54 @@ import { UpdateStationDto } from './update-station.dto';
 export class StationsService {
   constructor(@InjectRepository(Station) private repo: Repository<Station>) {}
 
-  create(dto: CreateStationDto) {
-    const e: any = this.repo.create({ stationName: dto.stationName });
-    if (dto.locationID) e.location = { locationID: dto.locationID };
-    if (dto.pollutantID) e.pollutant = { pollutantID: dto.pollutantID };
-    return this.repo.save(e);
+  async create(dto: CreateStationDto) {
+    try {
+      console.log('Service received DTO:', JSON.stringify(dto, null, 2));
+      
+      // Validar que el nombre de la estación esté presente
+      if (!dto || !dto.stationName) {
+        console.log('DTO validation failed - stationName is missing or null');
+        throw new BadRequestException('Station name is required');
+      }
+
+      // Crear la entidad base
+      const stationData = {
+        stationName: dto.stationName.toString().trim() // Convertir a string y eliminar espacios
+      };
+      console.log('Creating station with data:', stationData);
+      
+      const station = this.repo.create(stationData);
+
+      // Agregar relaciones si se proporcionan los IDs
+      if (dto.locationID) {
+        station.location = { locationID: dto.locationID } as any;
+      }
+
+      if (dto.pollutantID) {
+        station.pollutant = { pollutantID: dto.pollutantID } as any;
+      }
+
+
+
+      return await this.repo.save(station);
+    } catch (error) {
+      console.error('Error creating station:', error);
+      
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      
+      // Manejar errores específicos de la base de datos
+      if (error.code === '23502') { // violación de no nulo
+        throw new BadRequestException('Station name cannot be empty');
+      }
+      
+      if (error.code === '23503') { // violación de clave foránea
+        throw new BadRequestException('Invalid locationID or pollutantID');
+      }
+      
+      throw new InternalServerErrorException('Failed to create station: ' + error.message);
+    }
   }
 
   findAll() {
