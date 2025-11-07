@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -11,10 +11,21 @@ export class UsersService {
   constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
   async create(dto: CreateUserDto) {
-    const hashed = await bcrypt.hash(dto.password, 10);
-    const e: any = this.repo.create({ fullName: dto.fullName, email: dto.email, password: hashed, phone: dto.phone });
-    if (dto.companyID) e.company = { companyID: dto.companyID };
-    return this.repo.save(e);
+    try {
+      console.log('Creating user payload (password hidden):', { fullName: dto.fullName, email: dto.email, phone: dto.phone, companyID: dto.companyID });
+
+      if (!dto.password) {
+        throw new BadRequestException('Password is required');
+      }
+
+      const hashed = await bcrypt.hash(dto.password, 10);
+      const e: any = this.repo.create({ fullName: dto.fullName, email: dto.email, password: hashed, phone: dto.phone });
+      if (dto.companyID) e.company = { companyID: dto.companyID };
+      return this.repo.save(e);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 
   findAll() {
