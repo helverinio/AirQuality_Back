@@ -505,6 +505,161 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Alerts",
+			"item": [
+				{
+					"name": "Create Alert",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"High pollution levels detected in Station 1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/alerts",
+							"host": ["{{base_url}}"],
+							"path": ["alerts"]
+						}
+					}
+				},
+				{
+					"name": "Get All Alerts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/alerts",
+							"host": ["{{base_url}}"],
+							"path": ["alerts"]
+						}
+					}
+				},
+				{
+					"name": "Get Alert by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/alerts/1",
+							"host": ["{{base_url}}"],
+							"path": ["alerts", "1"]
+						}
+					}
+				},
+				{
+					"name": "Update Alert",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Updated alert message\",\n    \"isRead\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/alerts/1",
+							"host": ["{{base_url}}"],
+							"path": ["alerts", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Alert",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/alerts/1",
+							"host": ["{{base_url}}"],
+							"path": ["alerts", "1"]
+						}
+					}
+				},
+				{
+					"name": "Mark Alert as Read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/alerts/1/read",
+							"host": ["{{base_url}}"],
+							"path": ["alerts", "1", "read"]
+						}
+					}
+				}
+			]
 		}
 	]
 }

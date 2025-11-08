@@ -14,6 +14,7 @@ import { PollutantsModule } from './pollutants/pollutants.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
     MeasurementsModule,
     UsersModule,
     AuthModule,
+    AlertsModule,
   ],
   controllers: [AppController],
   providers: [
