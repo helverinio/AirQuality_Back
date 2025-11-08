@@ -20,6 +20,14 @@ export class MeasurementsService {
     return this.repo.find({ relations: ['station', 'pollutant'] });
   }
 
+  findByStation(stationID: number) {
+    return this.repo.find({
+      where: { station: { stationID } },
+      relations: ['station', 'pollutant'],
+      order: { dateTime: 'DESC' },
+    });
+  }
+
   findOne(id: number) {
     return this.repo.findOne({ where: { measurementID: id }, relations: ['station', 'pollutant'] });
   }

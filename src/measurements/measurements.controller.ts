@@ -17,6 +17,11 @@ export class MeasurementsController {
     return this.service.findAll();
   }
 
+  @Get('station/:stationID')
+  findByStation(@Param('stationID') stationID: string) {
+    return this.service.findByStation(Number(stationID));
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(Number(id));
